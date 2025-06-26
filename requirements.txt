@@ -1,0 +1,4 @@
+pyspark
+PyArrow >= 11.0.0
+pandas
+numpy
