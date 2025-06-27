@@ -2,3 +2,31 @@ pyspark
 PyArrow >= 11.0.0
 pandas
 numpy
+sentence-transformers
+torch
+transformers
+scikit-learn
+nltk
+
+# Kafka support
+confluent-kafka
+kafka-python
+
+# Reddit API
+praw
+
+# Topic modeling
+bertopic
+umap-learn
+hdbscan
+
+# Visualization
+plotly
+matplotlib
+
+# Additional ML dependencies
+azure-ai-inference
+azure-core
+
+# For embeddings and NLP
+datasets

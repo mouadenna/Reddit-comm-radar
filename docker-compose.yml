@@ -1,8 +1,40 @@
 version: "3.8"
 
 services:
+  # Zookeeper for Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - spark-network
+
+  # Kafka broker
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    networks:
+      - spark-network
+
   spark-master:
-    image: bitnami/spark:4.0.0
+    build: .
     container_name: spark-master
     environment:
       - SPARK_MODE=master
@@ -14,17 +46,25 @@ services:
       - "8080:8080"
       - "7077:7077"
       - "4040:4040"
+    volumes:
+      - ./data:/app/data
+      - ./spark:/app/spark
+    depends_on:
+      - kafka
     networks:
       - spark-network
 
   spark-worker:
-    image: bitnami/spark:4.0.0
+    build: .
     container_name: spark-worker
     environment:
       - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark-master:7077
       - SPARK_WORKER_MEMORY=2G
       - SPARK_WORKER_CORES=4
+    volumes:
+      - ./data:/app/data
+      - ./spark:/app/spark
     depends_on:
       - spark-master
     networks:
