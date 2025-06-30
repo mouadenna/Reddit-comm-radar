@@ -46,7 +46,7 @@ class RedditStreamProcessor:
             .config("spark.ui.port", "4041") \
             .config("spark.pyspark.python", "python3") \
             .config("spark.pyspark.driver.python", "python3") \
-            .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.0") \
+            .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.6") \
             .config("spark.sql.streaming.forceDeleteTempCheckpointLocation", "true") \
             .getOrCreate()
         

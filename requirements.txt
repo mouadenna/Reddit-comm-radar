@@ -1,4 +1,4 @@
-pyspark
+pyspark==3.5.6
 PyArrow >= 11.0.0
 pandas
 numpy
