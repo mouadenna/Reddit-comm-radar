@@ -4,33 +4,77 @@ A real-time streaming pipeline that analyzes Reddit data using Apache Spark, Kaf
 
 ## Architecture
 
-The pipeline consists of several components:
+The following diagram illustrates the architecture of the Reddit Community Radar pipeline:
 
-1. **Reddit Producer** (`kafka/reddit-producer.py`) - Streams Reddit posts to Kafka
-2. **Streaming Pipeline** (`spark/streaming-pipeline.py`) - Processes data in real-time using Spark Streaming
-3. **Sentiment Analysis** - Analyzes sentiment using CardiffNLP's Twitter RoBERTa model
-4. **Topic Modeling** - Generates embeddings for future topic modeling
-5. **Kafka** - Message broker for real-time data streaming
-6. **Apache Spark** - Distributed computing framework for data processing
+```mermaid
+graph TD
+    A[Reddit API] --> B(Kafka Producer);
+    B --> C{Kafka Topic: reddit-morocco};
+    C --> D[Spark Streaming Pipeline];
+    D --> E{Processors};
+    E --> F[Sentiment Analysis];
+    E --> G[Topic Modeling];
+    E --> H[Keyword Extraction];
+    D --> I(Databricks Tables);
+    D --> J(CSV Files);
+    I --> K(Power BI Dashboard);
+
+    subgraph "Data Sources"
+        A
+    end
+
+    subgraph "Data Ingestion"
+        B
+        C
+    end
+
+    subgraph "Real-time Processing"
+        D
+        E
+    end
+
+    subgraph "NLP Models"
+        F
+        G
+        H
+    end
+
+    subgraph "Data Storage"
+        I
+        J
+    end
+
+    subgraph "Visualization"
+        K
+    end
+```
+
+## Dashboard
+
+Here is a sample of what the final dashboard could look like in Power BI:
+
+![Dashboard](dashboard.jpg)
 
 ## Features
 
 - **Real-time Reddit data streaming** from any subreddit
 - **Sentiment analysis** using state-of-the-art transformer models
-- **Embedding generation** for topic modeling and similarity analysis
-- **Scalable architecture** using Docker and Apache Spark
-- **Fault-tolerant processing** with Kafka and Spark checkpointing
-- **Structured data output** in JSON format for further analysis
+- **Topic modeling** to discover hidden themes in discussions
+- **Keyword extraction** to identify important terms
+- **Scalable architecture** using Docker, Kafka, and Spark
+- **Data storage** in both CSV files and a Databricks data warehouse
+- **Interactive dashboarding** with Power BI
 
 ## Prerequisites
 
 - Docker and Docker Compose
-- Python 3.12
-- Reddit API credentials (client_id and client_secret)
+- Python 3.10+
+- A Reddit API application
+- A Databricks workspace
 
 ## Quick Start
 
-### 1. Setup
+### 1. Setup Environment
 
 Clone the repository and navigate to the project directory:
 
@@ -39,19 +83,28 @@ git clone <repository-url>
 cd Reddit-comm-radar
 ```
 
+Create a `.env` file in the root of the project and add your credentials:
+
+```env
+DATABRICKS_SERVER_HOSTNAME=your-databricks-hostname
+DATABRICKS_HTTP_PATH=your-databricks-http-path
+DATABRICKS_TOKEN=your-databricks-token
+KAFKA_BOOTSTRAP_SERVERS=localhost:9092
+REDDIT_CLIENT_ID=your-reddit-client-id
+REDDIT_CLIENT_SECRET=your-reddit-client-secret
+```
+
 ### 2. Start the Infrastructure
 
-Start Kafka, Zookeeper, and Spark cluster:
+Start Kafka, Zookeeper, and other services:
 
 ```bash
 docker-compose up -d
 ```
 
-Wait for all services to be ready (this may take a few minutes).
-
 ### 3. Create Kafka Topic
 
-Create the required Kafka topic:
+Create the required Kafka topic for the pipeline:
 
 ```bash
 python kafka/setup_topic.py
@@ -59,7 +112,7 @@ python kafka/setup_topic.py
 
 ### 4. Start the Reddit Producer
 
-In a new terminal, start streaming Reddit data:
+In a new terminal, start streaming Reddit data into Kafka:
 
 ```bash
 python kafka/reddit-producer.py
@@ -67,11 +120,24 @@ python kafka/reddit-producer.py
 
 ### 5. Start the Streaming Pipeline
 
-In another terminal, start the Spark streaming pipeline:
+In another terminal, start the Spark streaming pipeline to process the data:
 
 ```bash
-python spark/streaming-pipeline.py
+python spark/streaming_pipeline.py
 ```
+
+## Monitoring
+
+- **Spark Master UI**: `http://localhost:8080`
+- **Spark Application UI**: `http://localhost:4040`
+- **Kafka Topics**: 
+  ```bash
+  docker exec -it kafka kafka-topics --bootstrap-server localhost:9092 --list
+  ```
+- **Kafka Messages**:
+  ```bash
+  docker exec -it kafka kafka-console-consumer --bootstrap-server localhost:9092 --topic reddit-morocco --from-beginning
+  ```
 
 ## Configuration
 

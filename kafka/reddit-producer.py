@@ -5,6 +5,9 @@ import time
 import logging
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -21,14 +24,14 @@ class RedditProducer:
         
         # Initialize Reddit API
         self.reddit = praw.Reddit(
-            client_id="WE9cMa51atcAuT5vk82o4w",
-            client_secret="gKSbsR83IF45C2jruOi6gsCQ8fyLPw",
+            client_id=os.getenv("REDDIT_CLIENT_ID"),
+            client_secret=os.getenv("REDDIT_CLIENT_SECRET"),
             user_agent="Reddit Kafka Producer"
         )
         
         # Initialize Kafka Producer
         self.producer = Producer({
-            'bootstrap.servers': 'localhost:9092',
+            'bootstrap.servers': os.getenv("KAFKA_BOOTSTRAP_SERVERS", 'localhost:9092'),
             'client.id': 'reddit-producer'
         })
         
@@ -45,7 +48,7 @@ class RedditProducer:
     def format_submission_data(self, submission):
         """Format Reddit submission data for Kafka"""
         try:
-            data = {
+            return {
                 "id": submission.id,
                 "title": submission.title,
                 "author": str(submission.author) if submission.author else "deleted",
@@ -57,7 +60,6 @@ class RedditProducer:
                 "subreddit": submission.subreddit.display_name,
                 "timestamp": time.time()
             }
-            return data
         except Exception as e:
             logger.error(f"Error formatting submission data: {str(e)}")
             return None
@@ -106,7 +108,7 @@ class RedditProducer:
 
 def main():
     """Main function to run the Reddit producer"""
-    producer = RedditProducer()
+    producer = RedditProducer(subreddit_name="Morocco", topic_name="reddit-morocco")
     producer.start_streaming()
 
 if __name__ == "__main__":
