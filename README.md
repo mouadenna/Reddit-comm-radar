@@ -16,7 +16,6 @@ graph TD
     E --> G[Topic Modeling];
     E --> H[Keyword Extraction];
     D --> I(Databricks Tables);
-    D --> J(CSV Files);
     I --> K(Power BI Dashboard);
 
     subgraph "Data Sources"
@@ -41,7 +40,6 @@ graph TD
 
     subgraph "Data Storage"
         I
-        J
     end
 
     subgraph "Visualization"
