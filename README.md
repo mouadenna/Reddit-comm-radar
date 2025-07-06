@@ -8,21 +8,43 @@ The following diagram illustrates the architecture of the Reddit Community Radar
 
 ```mermaid
 graph TD
-    A[Reddit API] -->|Stream Data| B[Kafka Producer]
-    B -->|Push Messages| C[Kafka Topic: reddit-morocco]
-    C -->|Consume Messages| D[Streaming Pipeline]
-    D -->|Process Data| E[Message Buffer]
-    E -->|Batch Processing| F[Data Processing]
-    F -->|Sentiment Analysis| G[Sentiment Processor]
-    F -->|Topic Modeling| H[Topic Processor]
-    F -->|Keyword Extraction| I[Keyword Processor]
-    G --> J[Data Storage]
-    H --> J
-    I --> J
-    J -->|CSV Files| K[Local Storage]
-    J -->|SQL Inserts| L[Databricks Data Warehouse]
-    L -->|Visualization| M[Power BI Dashboards]
+    A[Reddit API] --> B(Kafka Producer);
+    B --> C{Kafka Topic: reddit-morocco};
+    C --> D[Spark Streaming Pipeline];
+    D --> E{Processors};
+    E --> F[Sentiment Analysis];
+    E --> G[Topic Modeling];
+    E --> H[Keyword Extraction];
+    D --> I(Databricks Tables);
+    I --> K(Power BI Dashboard);
 
+    subgraph "Data Sources"
+        A
+    end
+
+    subgraph "Data Ingestion"
+        B
+        C
+    end
+
+    subgraph "Real-time Processing"
+        D
+        E
+    end
+
+    subgraph "NLP Models"
+        F
+        G
+        H
+    end
+
+    subgraph "Data Storage"
+        I
+    end
+
+    subgraph "Visualization"
+        K
+    end
 ```
 
 ## Dashboard
