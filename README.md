@@ -6,46 +6,7 @@ A real-time streaming pipeline that analyzes Reddit data using Apache Spark, Kaf
 
 The following diagram illustrates the architecture of the Reddit Community Radar pipeline:
 
-```mermaid
-graph TD
-    A[Reddit API] --> B(Kafka Producer);
-    B --> C{Kafka Topic: reddit-morocco};
-    C --> D[Spark Streaming Pipeline];
-    D --> E{Processors};
-    E --> F[Sentiment Analysis];
-    E --> G[Topic Modeling];
-    E --> H[Keyword Extraction];
-    D --> I(Databricks Tables);
-    I --> K(Power BI Dashboard);
-
-    subgraph "Data Sources"
-        A
-    end
-
-    subgraph "Data Ingestion"
-        B
-        C
-    end
-
-    subgraph "Real-time Processing"
-        D
-        E
-    end
-
-    subgraph "NLP Models"
-        F
-        G
-        H
-    end
-
-    subgraph "Data Storage"
-        I
-    end
-
-    subgraph "Visualization"
-        K
-    end
-```
+![Architecture Diagram](architecture.png)
 
 ## Dashboard
 
