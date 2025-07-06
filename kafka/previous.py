@@ -2,6 +2,9 @@ import praw
 import datetime
 import time
 import requests
+import json
+import os
+from pathlib import Path
 
 def extract_comments_from_json(comments_data):
     all_comment_texts = []
@@ -91,6 +94,19 @@ def fetch_reddit_subreddit_last_24h(subreddit_name, limit=None):
         print(f"[{count}] Fetched post {submission.id} with {len(comments)} comments")
 
     print(f"Total posts fetched: {count}")
+    
+    # Save data to file
+    data_dir = Path("data/historical")
+    data_dir.mkdir(parents=True, exist_ok=True)
+    
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = data_dir / f"{subreddit_name}_{timestamp}.json"
+    
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(posts_data, f, ensure_ascii=False, indent=2)
+    
+    print(f"Data saved to {filename}")
+    
     return posts_data
 
 
