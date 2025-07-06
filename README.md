@@ -1,4 +1,4 @@
-# Reddit Community Radar - Streaming Pipeline
+# End-to-End Subreddit Streaming Analytics with Spark and Power BI
 
 A real-time streaming pipeline that analyzes Reddit data using Apache Spark, Kafka, and advanced NLP techniques including sentiment analysis and topic modeling.
 
