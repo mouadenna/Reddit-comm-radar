@@ -8,6 +8,8 @@ The following diagram illustrates the architecture of the Reddit Community Radar
 
 ![Architecture Diagram](architecture.png)
 
+The Spark architecture is configured in **Client Mode**, where the driver runs on the local machine and connects to the Spark master in the Docker network.
+
 ## Dashboard
 
 Here is a sample of what the final dashboard could look like in Power BI:
